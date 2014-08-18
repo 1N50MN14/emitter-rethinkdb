@@ -45,7 +45,7 @@ function Emitter(r, opts) {
 				self.queue.resume()
 				_listen()
 				}, 2000)			
-			}) //_init
+			})
 	})
 	.on('reconnect', function(n,d) {
 		self.emit('reconnect', n,d)
