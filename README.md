@@ -15,7 +15,7 @@ var emitter = require('emitter-rethinkdb')(rethinkdb, opts)
 
 emitter.trigger('beep', 'boop')
 
-emitter.on('boop', function(d){
+emitter.on('beep', function(d){
 	console.log(d) //should log "boop"
 })
 
