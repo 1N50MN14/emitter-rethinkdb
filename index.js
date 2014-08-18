@@ -75,7 +75,7 @@ function Emitter(r, opts) {
 					cb(null)
 				})
 		})
-	}
+	} //init
 
 	function _initTable(cb) {
 		r.db(opts.db).tableList().run(self.conn, function(err, items){
