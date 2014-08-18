@@ -36,16 +36,16 @@ function Emitter(r, opts) {
 		self.conn = conn
 		self.emit('connect', conn)
 		_init(function(err){
-			if (err) return self.emit('error', err)
-				/* as of now there's rethinkdb doesn't let us know when
-				 table is ready and it's time to perform operations;
-				 using an ugly hack for now
-				*/
-				setTimeout(function(){
-				self.queue.resume()
-				_listen()
-				}, 2000)			
-			})
+		if (err) return self.emit('error', err)
+			/* as of now there's rethinkdb doesn't let us know when
+			table is ready and it's time to perform operations;
+			using an ugly hack for now
+			*/
+			setTimeout(function(){
+			self.queue.resume()
+			_listen()
+			}, 2000)			
+		})
 	})
 	.on('reconnect', function(n,d) {
 		self.emit('reconnect', n,d)
@@ -67,21 +67,21 @@ function Emitter(r, opts) {
 
 	function _init(cb) {
 		if (self.init) return cb(null)
-			_initDb(function(err){
+		_initDb(function(err){
+			if (err) return cb(err)
+			_initTable(function(err){
 				if (err) return cb(err)
-				_initTable(function(err){
-					if (err) return cb(err)
-					self.init = true				
-					cb(null)
-				})
+				self.init = true				
+				cb(null)
+			})
 		})
-	} //init
+	}
 
 	function _initTable(cb) {
 		r.db(opts.db).tableList().run(self.conn, function(err, items){
 			if (err) return cb(err)				
 			if (items.indexOf(opts.table) !== -1) return cb(null)
-			r.db(opts.db).tableCreate(opts.table).run(self.conn, function(err){
+				r.db(opts.db).tableCreate(opts.table).run(self.conn, function(err){
 				cb(err ? err : null)
 			})
 		})
