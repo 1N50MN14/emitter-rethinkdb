@@ -37,13 +37,13 @@ function Emitter(r, opts) {
 		self.emit('connect', conn)
 		_init(function(err){
 		if (err) return self.emit('error', err)
-			/* as of now there's rethinkdb doesn't let us know when
+			/* as of now rethinkdb doesn't let us know when
 			table is ready and it's time to perform operations;
 			using an ugly hack for now
 			*/
 			setTimeout(function(){
-			self.queue.resume()
-			_listen()
+				_listen()
+				self.queue.resume()				
 			}, 2000)			
 		})
 	})
@@ -58,6 +58,7 @@ function Emitter(r, opts) {
 		r.db(opts.db).table(opts.table).changes().run(self.conn, function(err, cursor) {			
 			if (err) return self.emit('error', err)
 			cursor.each(function(err, data) {	
+				console.log(data)
 				if (!data.old_val) return		  		
 				args = data.old_val.args
 				self.emit.apply(self, args)
