@@ -14,9 +14,9 @@ function Emitter(r, opts) {
 	this.init = false
 	this.conn = null
 	this.queue = async.queue(function (task, cb) {		
-		r.db(opts.db).table(opts.table).insert({args:task.args},{returnVals: true}).run(self.conn, function(err, obj){   	
-			err && cb(err)
-			r.db(opts.db).table(opts.table).get(obj.new_val.id).delete().run(self.conn, function(err){
+		r.db(opts.db).table(opts.table).insert({args:task.args}).run(self.conn, function(err, obj){   	
+			err && cb(err)			
+			r.db(opts.db).table(opts.table).get(obj.generated_keys[0]).delete().run(self.conn, function(err){
 				cb(err ? err : null)
 			})
 		})
@@ -58,7 +58,6 @@ function Emitter(r, opts) {
 		r.db(opts.db).table(opts.table).changes().run(self.conn, function(err, cursor) {			
 			if (err) return self.emit('error', err)
 			cursor.each(function(err, data) {	
-				console.log(data)
 				if (!data.old_val) return		  		
 				args = data.old_val.args
 				self.emit.apply(self, args)
